@@ -2,7 +2,7 @@ import { connectionStr } from "@/app/_components/lib/db";
 import { userSchema } from "@/app/_components/lib/userModel";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
-import { useRouter } from "next/navigation";
+
 
 export async function POST(request) {
   try {
