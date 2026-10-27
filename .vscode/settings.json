@@ -1,0 +1,21 @@
+{
+  "javascript.suggest.enabled": true,
+  "javascript.suggest.autoImports": true,
+  "typescript.suggest.enabled": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggest.showWords": true,
+  "editor.suggest.showMethods": true,
+  "editor.suggest.showFunctions": true,
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.acceptSuggestionOnCommitCharacter": true,
+  "editor.tabCompletion": "on",
+  "editor.suggestOnTriggerCharacters": true,
+  "files.exclude": {
+    "**/.next": true
+  }
+}

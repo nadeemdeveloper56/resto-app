@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CustomerHeader from "../_components/CustomerHeader";
 import RestaurantFooter from "../_components/RestaurantFooter";
 
-export default function UserAuth() {
+function UserAuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -77,7 +77,6 @@ export default function UserAuth() {
       if (response.ok && data.success) {
         const result = data.result;
 
-        // Save safe user information only
         const safeUser = {
           id: result.id || result._id,
           _id: result._id || result.id,
@@ -87,13 +86,9 @@ export default function UserAuth() {
           city: result.city || user.city.trim(),
         };
 
-        // Save user in LocalStorage
         localStorage.setItem("user", JSON.stringify(safeUser));
-
-        // Update the header immediately
         window.dispatchEvent(new Event("userChange"));
 
-        // Redirect according to where signup started
         const redirect = searchParams.get("redirect");
 
         const destination =
@@ -107,9 +102,7 @@ export default function UserAuth() {
         router.replace(destination);
         router.refresh();
       } else {
-        setMessage(
-          data.message || "Signup failed. Please try again."
-        );
+        setMessage(data.message || "Signup failed. Please try again.");
       }
     } catch (error) {
       console.error("Signup Error:", error);
@@ -118,6 +111,12 @@ export default function UserAuth() {
       setLoading(false);
     }
   };
+
+  const redirect = searchParams.get("redirect");
+
+  const loginHref = redirect
+    ? `/user-login?redirect=${encodeURIComponent(redirect)}`
+    : "/user-login";
 
   return (
     <>
@@ -204,9 +203,7 @@ export default function UserAuth() {
             </div>
 
             <div className="signup-input-group">
-              <label htmlFor="confirmPassword">
-                Confirm Password
-              </label>
+              <label htmlFor="confirmPassword">Confirm Password</label>
               <input
                 type="password"
                 id="confirmPassword"
@@ -237,17 +234,7 @@ export default function UserAuth() {
 
           <p className="signup-login">
             Already have an account?{" "}
-            <Link
-              href={
-                searchParams.get("redirect")
-                  ? `/user-login?redirect=${encodeURIComponent(
-                      searchParams.get("redirect")
-                    )}`
-                  : "/user-login"
-              }
-            >
-              Login
-            </Link>
+            <Link href={loginHref}>Login</Link>
           </p>
 
           <Link href="/" className="signup-home">
@@ -258,5 +245,13 @@ export default function UserAuth() {
 
       <RestaurantFooter />
     </>
+  );
+}
+
+export default function UserAuth() {
+  return (
+    <Suspense fallback={<p>Loading signup page...</p>}>
+      <UserAuthForm />
+    </Suspense>
   );
 }

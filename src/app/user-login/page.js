@@ -1,13 +1,12 @@
-
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CustomerHeader from "../_components/CustomerHeader";
 import RestaurantFooter from "../_components/RestaurantFooter";
 
-export default function UserLogin() {
+function UserLoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -54,17 +53,14 @@ export default function UserLogin() {
                     city: result.city,
                 };
 
-                // Keep the login for this browser tab session.
                 sessionStorage.setItem(
                     "activeUser",
                     JSON.stringify(safeUser)
                 );
 
-                // Remove old persistent login data.
                 localStorage.removeItem("user");
                 localStorage.removeItem("userLoginExpiry");
 
-                // Restore this user's personal cart.
                 const userId =
                     safeUser._id || safeUser.id || safeUser.email;
 
@@ -170,10 +166,7 @@ export default function UserLogin() {
                         </div>
 
                         {message && (
-                            <p
-                                className="login-message"
-                                role="status"
-                            >
+                            <p className="login-message" role="status">
                                 {message}
                             </p>
                         )}
@@ -189,7 +182,17 @@ export default function UserLogin() {
 
                     <p className="login-signup">
                         Don&apos;t have an account?{" "}
-                        <Link href="/user-auth">Sign Up</Link>
+                        <Link
+                            href={
+                                searchParams.get("redirect")
+                                    ? `/user-auth?redirect=${encodeURIComponent(
+                                          searchParams.get("redirect")
+                                      )}`
+                                    : "/user-auth"
+                            }
+                        >
+                            Sign Up
+                        </Link>
                     </p>
 
                     <Link href="/" className="login-home">
@@ -200,5 +203,13 @@ export default function UserLogin() {
 
             <RestaurantFooter />
         </>
+    );
+}
+
+export default function UserLogin() {
+    return (
+        <Suspense fallback={<p>Loading login page...</p>}>
+            <UserLoginForm />
+        </Suspense>
     );
 }
