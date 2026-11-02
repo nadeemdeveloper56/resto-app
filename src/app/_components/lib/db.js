@@ -18,16 +18,12 @@ export async function connectDB() {
     }
 
     if (cached.conn && mongoose.connection.readyState === 1) {
-        console.log(
-            "CONNECTED DATABASE:",
-            mongoose.connection.name
-        );
-
         return cached.conn;
     }
 
     if (!cached.promise) {
         cached.promise = mongoose.connect(connectionStr, {
+            dbName: "RestoApp",
             serverSelectionTimeoutMS: 10000,
             connectTimeoutMS: 10000,
         });
@@ -45,9 +41,7 @@ export async function connectDB() {
     } catch (error) {
         cached.promise = null;
         cached.conn = null;
-
-        console.error("DATABASE CONNECTION ERROR:", error.message);
-
+        console.error("DATABASE ERROR:", error.message);
         throw error;
     }
 }
