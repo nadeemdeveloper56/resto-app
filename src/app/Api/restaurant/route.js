@@ -1,16 +1,8 @@
 
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import { restaurantSchema } from "@/app/_components/lib/restaurantModel";
 import { seedRestaurantFoods } from "@/app/lib/seedRestaurantFoods";
-
-const connectionStr = process.env.MONGODB_URI;
-
-async function connectDB() {
-    if (mongoose.connection.readyState !== 1) {
-        await mongoose.connect(connectionStr);
-    }
-}
+import { connectDB } from "@/app/_components/lib/db";
 
 export async function GET() {
     try {
@@ -20,7 +12,7 @@ export async function GET() {
 
         return NextResponse.json({
             success: true,
-            database: mongoose.connection.name,
+            database: restaurantSchema.db.name,
             collection: restaurantSchema.collection.name,
             result: data,
         });
@@ -28,7 +20,10 @@ export async function GET() {
         console.error("GET ERROR:", error);
 
         return NextResponse.json(
-            { success: false, message: error.message },
+            {
+                success: false,
+                message: error.message,
+            },
             { status: 500 }
         );
     }
@@ -50,7 +45,7 @@ export async function POST(request) {
             login,
         } = body;
 
-        // LOGIN
+        // RESTAURANT LOGIN
         if (login === true) {
             const result = await restaurantSchema.findOne({
                 email,
@@ -58,20 +53,26 @@ export async function POST(request) {
             });
 
             if (!result) {
-                return NextResponse.json({
-                    success: false,
-                    message: "Incorrect email or password",
-                });
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: "Incorrect email or password",
+                    },
+                    { status: 401 }
+                );
             }
+
+            const safeRestaurant = result.toObject();
+            delete safeRestaurant.password;
 
             return NextResponse.json({
                 success: true,
                 message: "Login successful",
-                result,
+                result: safeRestaurant,
             });
         }
 
-        // SIGNUP
+        // RESTAURANT SIGNUP VALIDATION
         if (
             !email ||
             !password ||
@@ -89,6 +90,7 @@ export async function POST(request) {
             );
         }
 
+        // CHECK EXISTING EMAIL
         const existingRestaurant = await restaurantSchema.findOne({
             email,
         });
@@ -103,6 +105,7 @@ export async function POST(request) {
             );
         }
 
+        // CREATE RESTAURANT
         const restaurant = new restaurantSchema({
             email,
             password,
@@ -114,7 +117,7 @@ export async function POST(request) {
 
         const result = await restaurant.save();
 
-        // Automatically add sample foods for this new restaurant
+        // ADD SAMPLE FOODS
         let menuResult;
 
         try {
@@ -122,18 +125,23 @@ export async function POST(request) {
         } catch (seedError) {
             console.error("FOOD SEED ERROR:", seedError);
 
+            const safeRestaurant = result.toObject();
+            delete safeRestaurant.password;
+
             return NextResponse.json(
                 {
                     success: false,
                     message:
                         "Restaurant was created, but sample foods could not be added.",
                     restaurantId: result._id,
+                    restaurant: safeRestaurant,
                     error: seedError.message,
                 },
                 { status: 500 }
             );
         }
 
+        // HIDE PASSWORD
         const safeRestaurant = result.toObject();
         delete safeRestaurant.password;
 
