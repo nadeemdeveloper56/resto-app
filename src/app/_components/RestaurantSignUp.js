@@ -59,7 +59,7 @@ const RestaurantSignUp = () => {
         }
 
         try {
-            const response = await fetch("/Api/restaurant", {
+            const response = await fetch("/Api/restaurant/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
