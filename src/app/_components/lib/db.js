@@ -17,7 +17,12 @@ export async function connectDB() {
         throw new Error("MONGODB_URI is not configured");
     }
 
-    if (cached.conn) {
+    if (cached.conn && mongoose.connection.readyState === 1) {
+        console.log(
+            "CONNECTED DATABASE:",
+            mongoose.connection.name
+        );
+
         return cached.conn;
     }
 
@@ -30,10 +35,19 @@ export async function connectDB() {
 
     try {
         cached.conn = await cached.promise;
+
+        console.log(
+            "CONNECTED DATABASE:",
+            mongoose.connection.name
+        );
+
+        return cached.conn;
     } catch (error) {
         cached.promise = null;
+        cached.conn = null;
+
+        console.error("DATABASE CONNECTION ERROR:", error.message);
+
         throw error;
     }
-
-    return cached.conn;
 }
