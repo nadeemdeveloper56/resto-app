@@ -296,11 +296,16 @@ table img {
   font-size: 40px;
 }
 .detail-wrapper {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 20px;
+  padding: 18px 24px;
   background-color: orange;
 }
 .detail-wrapper h3 {
-  width: 50%;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 .food-item-wrapper {
   margin-top: 50px;
@@ -2539,8 +2544,16 @@ table img {
 /* Tablet */
 
 @media (max-width: 768px) {
-    
-    
+    .detail-wrapper {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 16px;
+        padding: 16px;
+    }
+
+    .detail-wrapper h3 {
+        font-size: 15px;
+        line-height: 1.45;
+    }
 
     .food-item-wrapper {
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -2562,8 +2575,6 @@ table img {
 /* Mobile */
 
 @media (max-width: 480px) {
-    
-    
 
     .food-item-wrapper {
         grid-template-columns: 1fr;
@@ -2571,7 +2582,6 @@ table img {
         margin-top: 25px;
         padding: 0 12px;
     }
-    
 
     .food-item-wrapper .list-item {
         gap: 12px;
@@ -2599,6 +2609,13 @@ table img {
     .food-item-wrapper .list-item button {
         padding: 10px 8px;
         font-size: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .detail-wrapper {
+        grid-template-columns: 1fr;
+        gap: 8px;
     }
 }
 

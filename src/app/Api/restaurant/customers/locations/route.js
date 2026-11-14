@@ -7,7 +7,10 @@ export async function GET() {
     try {
         await connectDB();
 
-        const restaurants = await restaurantSchema.find();
+        const restaurants = await restaurantSchema
+            .find()
+            .select("city")
+            .lean();
 
         let result = restaurants
             .map((item) => item.city)

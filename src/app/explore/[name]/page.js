@@ -8,6 +8,7 @@ import RestaurantFooter from "@/app/_components/RestaurantFooter";
 import Image from "next/image";
 import { useEffect, useState, use } from "react";
 import defaultFoodItems from "@/app/lib/defaultFoodItems";
+import { fetchJson } from "@/app/lib/fetchJson";
 
 const Page = (props) => {
   const params = use(props.params);
@@ -48,11 +49,9 @@ const Page = (props) => {
 
       try {
         // Ek hi request mein restaurant details aur food items dono aa jate hain
-        const response = await fetch(
+        const data = await fetchJson(
           "/Api/restaurant/customers/" + id
         );
-
-        const data = await response.json();
 
         if (cancelled) return;
 

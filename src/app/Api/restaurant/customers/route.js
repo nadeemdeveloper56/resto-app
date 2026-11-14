@@ -1,32 +1,39 @@
 
-import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 import { restaurantSchema } from "@/app/_components/lib/restaurantModel";
-import { connectionStr } from "@/app/_components/lib/db";
+import { connectDB } from "@/app/_components/lib/db";
 
 export async function GET(request) {
-    let queryParams = request.nextUrl.searchParams;
-    console.log(queryParams.get("restaurant"));
+    try {
+        const queryParams = request.nextUrl.searchParams;
+        const filter = {};
 
-    let filter = {};
+        if (queryParams.get("location")) {
+            filter.city = {
+                $regex: new RegExp(queryParams.get("location"), "i")
+            };
+        }
 
-    if (queryParams.get("location")) {
-        let city = queryParams.get("location");
+        if (queryParams.get("restaurant")) {
+            filter.restaurantName = {
+                $regex: new RegExp(queryParams.get("restaurant"), "i")
+            };
+        }
 
-        filter.city = { $regex: new RegExp(city, "i") };
+        await connectDB();
+
+        const result = await restaurantSchema
+            .find(filter)
+            .select("restaurantName contactNumber city address email")
+            .lean();
+
+        return NextResponse.json({ success: true, result });
+    } catch (error) {
+        console.error("Customer restaurants API error:", error);
+
+        return NextResponse.json(
+            { success: false, message: "Failed to load restaurants" },
+            { status: 500 }
+        );
     }
-
-    if (queryParams.get("restaurant")) {
-        let restaurant = queryParams.get("restaurant");
-
-        filter.restaurantName = {
-            $regex: new RegExp(restaurant, "i")
-        };
-    }
-
-    await mongoose.connect(connectionStr);
-
-    let result = await restaurantSchema.find(filter).select("-password");
-
-    return NextResponse.json({ success: true, result });
 }

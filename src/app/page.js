@@ -2,6 +2,7 @@
 
 import CustomerHeader from "./_components/CustomerHeader";
 import RestaurantFooter from "./_components/RestaurantFooter";
+import { fetchJson } from "./lib/fetchJson";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -20,20 +21,7 @@ export default function Home() {
 
   const loadLocations = async () => {
     try {
-      const res = await fetch("/Api/restaurant/customers/locations");
-      const text = await res.text();
-
-      if (!res.ok) {
-        throw new Error(
-          `Locations API error: ${res.status} - ${text}`
-        );
-      }
-
-      if (!text.trim()) {
-        throw new Error("Locations API returned an empty response");
-      }
-
-      const data = JSON.parse(text);
+      const data = await fetchJson("/Api/restaurant/customers/locations");
 
       if (data.success) {
         setLocations(Array.isArray(data.result) ? data.result : []);
@@ -69,20 +57,7 @@ export default function Home() {
         url += "?" + query.join("&");
       }
 
-      const res = await fetch(url);
-      const text = await res.text();
-
-      if (!res.ok) {
-        throw new Error(
-          `Restaurants API error: ${res.status} - ${text}`
-        );
-      }
-
-      if (!text.trim()) {
-        throw new Error("Restaurants API returned an empty response");
-      }
-
-      const data = JSON.parse(text);
+      const data = await fetchJson(url);
 
       if (requestId !== requestIdRef.current) return;
 
