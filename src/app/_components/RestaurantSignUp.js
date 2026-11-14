@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 
-const RestaurantSignUp = () => {
+const RestaurantSignUp = ({ onSwitch }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -220,6 +220,19 @@ const RestaurantSignUp = () => {
                 <button type="submit" className="signup-button">
                     Create Account
                 </button>
+
+                {onSwitch && (
+                    <p className="auth-switch">
+                        Already have an account?{" "}
+                        <button
+                            type="button"
+                            className="auth-switch-link"
+                            onClick={onSwitch}
+                        >
+                            Login
+                        </button>
+                    </p>
+                )}
             </form>
         </main>
     );

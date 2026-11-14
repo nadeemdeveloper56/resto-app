@@ -1,4 +1,3 @@
-
 "use client";
 
 import RestaurantLogin from "../_components/RestaurantLogin";
@@ -13,34 +12,14 @@ const Restaurant = () => {
 
     return (
         <>
-            <div className="container">
-
+            <div className="restaurant-auth-page">
                 <RestaurantHeader />
 
-                <h1 className="text-2xl font-bold">
-                    Restaurant Login/Signup Page
-                </h1>
-
-                {
-                    Login ? (
-                        <RestaurantLogin />
-                    ) : (
-                        <RestaurantSignUp />
-                    )
-                }
-
-                <div>
-                    <button
-                        className="account-button button-Link"
-                        onClick={() => setIsLogin(!Login)}
-                    >
-                        {Login
-                            ? "Don't have an account? Sign Up"
-                            : "Already have an account? Login"
-                        }
-                    </button>
-                </div>
-
+                {Login ? (
+                    <RestaurantLogin onSwitch={() => setIsLogin(false)} />
+                ) : (
+                    <RestaurantSignUp onSwitch={() => setIsLogin(true)} />
+                )}
             </div>
 
             <RestaurantFooter />
@@ -49,4 +28,3 @@ const Restaurant = () => {
 };
 
 export default Restaurant;
-

@@ -39,10 +39,6 @@ const RestaurantHeader = () => {
                     src="https://graphicsfamily.com/wp-content/uploads/edd/2023/02/Restaurant-Logo-Design-2-1180x664.jpg"
                     alt="Restaurant Logo"
                     className="logo-image"
-                    style={{
-                        width: "100px",
-                        height: "auto",
-                    }}
                 />
             </div>
 

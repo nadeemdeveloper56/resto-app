@@ -20,6 +20,7 @@ const Page = (props) => {
   const [cartStorage, setCartStorage] = useState([]);
   const [cartIds, setCartIds] = useState([]);
   const [removeCartData, setRemoveCartData] = useState();
+  const [loadingFoods, setLoadingFoods] = useState(true);
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -32,59 +33,64 @@ const Page = (props) => {
       })
     );
 
+    let cancelled = false;
+
     const LoadRestaurantDetails = async () => {
       const id = searchParams.id;
 
       if (!id) {
         console.log("Restaurant ID nahi mili");
+        setLoadingFoods(false);
         return;
       }
 
+      setLoadingFoods(true);
+
       try {
-        let response = await fetch(
+        // Ek hi request mein restaurant details aur food items dono aa jate hain
+        const response = await fetch(
           "/Api/restaurant/customers/" + id
         );
 
-        let data = await response.json();
+        const data = await response.json();
+
+        if (cancelled) return;
 
         if (data.success) {
           setRestaurantDetails(data.details);
         }
 
-        let foodResponse = await fetch(
-          "/Api/restaurant/foods/" + id
-        );
-
-        let foodData = await foodResponse.json();
-
-        if (foodData.success && Array.isArray(foodData.result)) {
+        if (data.success && Array.isArray(data.fooditems)) {
           const defaultFoodNames = new Set(
             defaultFoodItems.map((food) =>
               food.name.trim().toLowerCase()
             )
           );
 
-          const filteredFoods = foodData.result.filter((food) =>
+          const filteredFoods = data.fooditems.filter((food) =>
             defaultFoodNames.has(
               (food.name || "").trim().toLowerCase()
             )
           );
 
           setfoodItems(filteredFoods);
-
-          console.log("Filtered Food Items:", filteredFoods.map(
-            (food) => food.name
-          ));
         } else {
           setfoodItems([]);
         }
       } catch (error) {
         console.log("Restaurant Details Error:", error);
+      } finally {
+        // Items aa jayen ya error aaye, loading dono surat mein khatam
+        if (!cancelled) setLoadingFoods(false);
       }
     };
 
     LoadRestaurantDetails();
-  }, [searchParams]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchParams.id]);
 
   const addtoCart = (item) => {
     let localCartIds = [...cartIds];
@@ -144,7 +150,18 @@ const Page = (props) => {
       </div>
 
       <div className="food-item-wrapper">
-        {foodItems.length > 0 ? (
+        {loadingFoods ? (
+          Array.from({ length: 6 }).map((_, index) => (
+            <div className="food-skeleton" key={index}>
+              <div className="food-skeleton-img" />
+              <div className="food-skeleton-body">
+                <div className="food-skeleton-line w-60" />
+                <div className="food-skeleton-line w-30" />
+                <div className="food-skeleton-line w-90" />
+              </div>
+            </div>
+          ))
+        ) : foodItems.length > 0 ? (
           foodItems.map((item) => (
             <div className="list-item" key={item._id}>
               <Image
