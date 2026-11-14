@@ -269,9 +269,11 @@ export default function Home() {
             </div>
 
             <div className="address-wrapper">
-              <div>{item.city}, </div>
-              <div className="address">
-                {item.address}, Email: {item.email}
+              <div>{item.city}</div>
+              <div className="address">{item.address}</div>
+              <div className="restaurant-email">
+                <span>Email:</span>
+                <span>{item.email}</span>
               </div>
             </div>
           </div>

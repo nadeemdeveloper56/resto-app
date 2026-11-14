@@ -3696,3 +3696,65 @@ table img {
         border-radius: 15px;
     }
 }
+
+@media (max-width: 768px) {
+    .restaurant-list-container {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        width: 94%;
+        margin: 24px auto 40px;
+        gap: 16px;
+    }
+
+    .restaurant-list-container .restaurant-wrapper {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        margin: 0;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .restaurant-list-container .restaurant-wrapper * {
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .restaurant-list-container .restaurant-wrapper .heading-wrapper,
+    .restaurant-list-container .restaurant-wrapper .address-wrapper {
+        width: 100%;
+        padding: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .restaurant-list-container .restaurant-wrapper h3,
+    .restaurant-list-container .restaurant-wrapper h5,
+    .restaurant-list-container .restaurant-wrapper .address-wrapper > div {
+        width: 100%;
+        margin: 0;
+    }
+
+    .restaurant-list-container .restaurant-wrapper .restaurant-email {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .restaurant-list-container + .footer-wrapper {
+        position: static;
+        width: auto;
+        margin-top: 24px;
+        padding: 12px;
+        box-sizing: border-box;
+    }
+
+    .restaurant-list-container + .footer-wrapper p {
+        margin: 0;
+    }
+}
